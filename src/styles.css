@@ -1,0 +1,121 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,body{
+    min-height: 100vh;
+    min-width: 100vw;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+body{
+    display: flex;
+    flex-direction: column;
+}
+ul{
+    list-style-type: none;
+}
+#content{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#content-info{
+    flex: 1;
+    display: flex;
+}
+
+header{
+    background: royalblue;
+    padding: 5px 10px;
+    color: white;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+header ul{
+    display: flex;
+    gap: 20px;
+    list-style-type: none;
+    align-items: center;
+    
+}
+
+header #logo{
+    width: 70px;
+    height: auto;
+}
+
+header input{
+    padding: 3px;
+    border-radius: 4px;
+}
+
+#project-list{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: whitesmoke;
+    resize: horizontal;
+    list-style-type: none;
+    transition: display 0.4s ease;
+}
+
+#project-list li{
+    transition: background 0.4s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 5px;
+    border-radius: 5px;
+    
+}
+
+#project-list li:hover{
+    background: lightgrey;
+}
+
+#project-list.not-display{
+    display: none;
+}
+
+li i{
+    transition: background 0.4s ease;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+
+#project-info{
+    flex: 3;
+}
+
+#todos{
+    flex: 1;
+}
+.modal{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.471);
+}
+.inner-modal{
+    padding: 10px;
+    border-radius: 5px;
+    background: floralwhite;
+    width: clamp(200px, 40%, 600px);
+}
+
+.inner-modal > div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
