@@ -13,15 +13,17 @@ const project = function(name){
     return {name, todos};
 }
 
-const myProjects = (function(){
+const myProjects = function(){
     let projects = [];
     
     const addProject = function(prName){
         projects.push(project(prName));
         showProjects(projects);
     }
+
     addProject("DEFAULT");
+    
     return {addProject}
-})();
+}
 
 export {myProjects};

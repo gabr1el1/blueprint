@@ -49,11 +49,6 @@ header #logo{
     height: auto;
 }
 
-header input{
-    padding: 3px;
-    border-radius: 4px;
-}
-
 #project-list{
     flex: 1;
     display: flex;
@@ -61,7 +56,10 @@ header input{
     background: whitesmoke;
     resize: horizontal;
     list-style-type: none;
-    transition: display 0.4s ease;
+    transition: all 0.4s linear;
+    animation: fadeIn 1s;
+    overflow-y: auto;
+    height: 100vh;
 }
 
 #project-list li{
@@ -79,12 +77,11 @@ header input{
     background: lightgrey;
 }
 
-#project-list.not-display{
+#project-list.hide{
     display: none;
 }
 
 li i{
-    transition: background 0.4s ease;
     padding: 5px;
     border-radius: 3px;
 }
@@ -104,18 +101,70 @@ li i{
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.471);
+    background-color: rgba(0, 0, 0, 0.611);
 }
 .inner-modal{
-    padding: 10px;
-    border-radius: 5px;
-    background: floralwhite;
-    width: clamp(200px, 40%, 600px);
-}
-
-.inner-modal > div{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    background:whitesmoke;
+    width: clamp(200px, 40%, 600px);
+    height: 40vh;
+}
+.inner-modal > div{
+    padding: 8px;
+    
+}
+input{
+    border: none;
+    background: lightgray;
+    border-radius: 95px;
+    padding: 5px;
+}
+.inner-modal > .modal-title, .modal-buttons{
+    display: flex;
+    justify-content: center;  
+    gap: 10px;
+}
+.inner-modal > .modal-title{
+    border-bottom: thin solid lightgrey;
+}
+.inner-modal > .modal-info{
+    flex: 1;
+    overflow: auto;
+    border-bottom: thin solid lightgrey;
+}
+.inner-modal > .modal-info > div > *{
+    margin-bottom: 5px;
+}
+
+.modal-buttons > button{
+    width: 75px;
+    padding: 5px 8px;
+    
+}
+.btn{
+    text-align: center;
+    border-radius: 100px;
+    border: none;
+    transition: all 0.4s ease;
+}
+.btn:disabled{
+    opacity: 0.5;
+}
+.cancel-btn{
+    color: white;
+    background: red;
+}
+
+.conf-btn{
+    color: darkblue;
+    background: skyblue;
+}
+i{
+    transition: all 0.4s ease;
+}
+i:hover{
+    filter: invert(1);
 }
