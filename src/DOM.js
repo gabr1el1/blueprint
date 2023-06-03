@@ -1,7 +1,7 @@
 import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
 import { myProjects } from "./logic";
-let myProj;
+let myProjs;
 
 function initialPage(){
     
@@ -47,8 +47,8 @@ function initialPage(){
     });
 
     //myProj VARIABLE OBJECT CREATION
-    myProj = myProjects();
-    
+    myProjs = myProjects();
+    myProjs.showProjs();
 }
 
 const AddProjModal = function(){
@@ -124,7 +124,8 @@ const AddProjModal = function(){
     }
 
     const addProj = function(projName){
-        myProj.addProject(projName);
+        myProjs.addProject(projName);
+        myProjs.showProjs();
     }
     
     return {showModal};
