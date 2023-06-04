@@ -1,7 +1,7 @@
 import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
 import { MyProjects } from "./logic";
-let myProjs;
+
 
 function initialPage(){
     
@@ -52,9 +52,7 @@ function initialPage(){
         addTodoModal.showModal();
     })
 
-    //myProj VARIABLE OBJECT CREATION
-    myProjs = MyProjects();
-    myProjs.showProjs();
+    showProjects(MyProjects.projects);
 }
 
 const Modal = function(){
@@ -90,27 +88,33 @@ const Modal = function(){
 const AddProjModal = function(){
     
     const prototype = Modal();
-    prototype.modal.innerHTML = 
-    `
-    <div class="inner-modal">
-        <div class="modal-title">
-            <h2>New project</h2>
-        </div>
-        <div class="modal-info">
-            <div>
-                <h3>Name</h3>
-                <input type="text" id="project-name" size="30" required>
+
+    const buildModal = function(){
+        prototype.modal.innerHTML = 
+        `
+        <div class="inner-modal">
+            <div class="modal-title">
+                <h2>New project</h2>
+            </div>
+            <div class="modal-info">
+                <div class="modal-row">
+                    <h3>Name</h3>
+                    <input type="text" id="project-name" size="30" required>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="cancel-add-pr" class="cancel-btn btn">Cancel</button>
+                <button id="conf-add-pr" class="conf-btn btn" >Add</button>
             </div>
         </div>
-        <div class="modal-buttons">
-            <button id="cancel-add-pr" class="cancel-btn btn">Cancel</button>
-            <button id="conf-add-pr" class="conf-btn btn" >Add</button>
-        </div>
-    </div>
-    `
-
+        `;
+    }
+    
+    
     const showModal = function(){
         if(!prototype.activeModal){
+            //WE BUILD THE MODAL
+            buildModal();
             //MODAL IS ACTIVE
             prototype.activeModal=true;
             //WE ADD THE MODAL TO THE PAGE
@@ -155,40 +159,48 @@ const AddProjModal = function(){
     }
 
     const addProj = function(projName){
-        myProjs.addProj(projName);
-        myProjs.showProjs();
+        MyProjects.addProj(projName);
+        showProjects(MyProjects.projects);
     }
     
+
     return {showModal};
 }
 
 const AddTodoModal = function(){
     const prototype = Modal();
-    prototype.modal.classList.add("add-todo-modal");
     //TODO: In the AddTodoModal create the dropdown menu 
     //listing all the projects to create a todo for
     //could use forEach to create each project
-    prototype.modal.innerHTML = 
-    `
-    <div class="inner-modal">
-        <div class="modal-title">
-            <h2>New TODO for: </h2>
-        </div>
-        <div class="modal-info">
-            <div>
-                <h3>Name</h3>
-                <input type="text" id="project-name" size="30" required>
+    
+    const buildModal = function(){
+        prototype.modal.innerHTML = 
+        `
+        <div class="inner-modal">
+            <div class="modal-title">
+                <h2>New TODO for: </h2>`+
+                (function(){
+                    let htmlString = `<select id="projects-for-todo">`;
+                    MyProjects.projects.forEach(function(project,index){
+                        htmlString+=`<option value="${index}">${project.name}</option>`
+                    });
+                    htmlString+=`</select>`;
+                    return htmlString;
+                })()+
+            `</div>
+            <div class="modal-info"> 
             </div>
-        </div>
-        <div class="modal-buttons">
-            <button id="cancel-add-todo" class="cancel-btn btn">Cancel</button>
-            <button id="conf-add-todo" class="conf-btn btn" >Add</button>
-        </div>
-    </div>
-    `
+            <div class="modal-buttons">
+                <button id="cancel-add-todo" class="cancel-btn btn">Cancel</button>
+                <button id="conf-add-todo" class="conf-btn btn" >Add</button>
+            </div>
+        <div/>`;
+    }  
 
     const showModal = function(){
         if(!prototype.activeModal){
+            //WE BUILD THE MODAL
+            buildModal();
             //MODAL IS ACTIVE
             prototype.activeModal=true;
             //WE ADD THE MODAL TO THE PAGE
@@ -198,9 +210,21 @@ const AddTodoModal = function(){
     }
 
     const bindingModal = function(){
+        //SAVE SOME DOM
+        const confBtn = document.querySelector("#conf-add-todo");
+        ////BINDINGS THE BUTTONS ONCE THE MODAL IS APPENDED ON DOCUMENT
+        confBtn.disabled = true;
+        confBtn.addEventListener("click",
+        function(){
+            console.log("hola");
+        });
         document.querySelector("#cancel-add-todo").addEventListener("click",
         prototype.removeModal);
         ////
+    }
+
+    const addToDo = function(title,description,dueDate,priority,checked){
+
     }
 
 

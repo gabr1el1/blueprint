@@ -13,7 +13,7 @@ const Project = function(name){
     return {name, todos};
 }
 
-const MyProjects = function(){
+const MyProjects = (function(){
     let projects = [];
     
     const addProj = function(prName){
@@ -24,7 +24,7 @@ const MyProjects = function(){
     }
     addProj("DEFAULT");
     
-    return {addProj,showProjs}
-}
+    return {addProj,showProjs,get projects(){return projects}};
+})();
 
 export {MyProjects};

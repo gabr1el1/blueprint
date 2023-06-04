@@ -109,12 +109,18 @@ li i{
     padding: 10px;
     border-radius: 5px;
     background:whitesmoke;
-    width: clamp(200px, 40%, 600px);
-    height: 40vh;
+    width: clamp(200px, 50%, 600px);
+    height: 60vh;
 }
 .inner-modal > div{
     padding: 8px;
     
+}
+
+.inner-modal > .modal-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 input{
     border: none;
@@ -163,10 +169,6 @@ input{
     background: skyblue;
 }
 
-.add-todo-modal{
-    display: flex;
-    justify-content: space-evenly;
-}
 i{
     transition: all 0.4s ease;
 }
