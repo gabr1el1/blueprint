@@ -1,6 +1,6 @@
 import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
-import { myProjects } from "./logic";
+import { MyProjects } from "./logic";
 let myProjs;
 
 function initialPage(){
@@ -13,7 +13,7 @@ function initialPage(){
     header.insertAdjacentHTML("afterbegin",
     `
     <ul><li><img src="${logoSrc}" id="logo"></li><li><input type="text" placeholder="Search"></li></ul>
-    <ul><li><i class="fa-solid fa-plus" id="add-task" title="Add task"></i></li></ul>
+    <ul><li><i class="fa-solid fa-plus" id="add-todo" title="Add todo"></i></li></ul>
     `
     );
 
@@ -46,18 +46,51 @@ function initialPage(){
         projList.classList.toggle("hide");
     });
 
+    const btnAddTodo = document.querySelector("#add-todo");
+    const addTodoModal = AddTodoModal();
+    btnAddTodo.addEventListener("click",function(){
+        addTodoModal.showModal();
+    })
+
     //myProj VARIABLE OBJECT CREATION
-    myProjs = myProjects();
+    myProjs = MyProjects();
     myProjs.showProjs();
 }
 
-const AddProjModal = function(){
+const Modal = function(){
     let activeModal = false;
+    //Create modal element
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
+    
+    const removeModal = function(){
+        modal.remove();
+        activeModal=false;
+    }
+    /*-----------------ATTENTION------------------
+    //return {modal,activeModal,removeModal};
+    
+    Here this Modal factory is returning an object,
+    when accesing the activeModal property you are
+    accesing the object property ITSELF BUT NOT THE 
+    VARIABLE activeModal in the scope of Modal
 
-    //CONSTUCT MODAL HTML
-    const divModal = document.createElement("div");
-    divModal.classList.add("add-proj-modal","modal");
-    divModal.innerHTML = 
+    ONE WAY TO ACCESS this variable is using getters
+    and setters functions
+
+    Some info and examples : https://stackoverflow.com/questions/65590114/factory-function-method-not-updating-variable 
+    */
+
+    return {modal,
+            get activeModal(){return activeModal}, 
+            set activeModal(bool){activeModal = bool},
+            removeModal
+        };
+}
+const AddProjModal = function(){
+    
+    const prototype = Modal();
+    prototype.modal.innerHTML = 
     `
     <div class="inner-modal">
         <div class="modal-title">
@@ -77,31 +110,34 @@ const AddProjModal = function(){
     `
 
     const showModal = function(){
-        if(!activeModal){
-            
-
+        if(!prototype.activeModal){
+            //MODAL IS ACTIVE
+            prototype.activeModal=true;
             //WE ADD THE MODAL TO THE PAGE
-            document.querySelector("#content").appendChild(divModal);
-            //SAVE SOME DOM
-            const confBtn = document.querySelector("#conf-add-pr");
-            //VALIDATION
-            document.querySelector("#project-name").addEventListener("keyup",
-            validation);
-
-            ////BINDINGS THE BUTTONS ONCE THE MODAL IS APPENDED ON DOCUMENT
-            confBtn.disabled = true;
-            confBtn.addEventListener("click",
-            function(){
-                const projectName = document.querySelector("#project-name").value;
-                addProj(projectName);
-            });
-
-            document.querySelector("#cancel-add-pr").addEventListener("click",
-            removeModal);
-            ////
-            activeModal=true;
+            document.querySelector("#content").appendChild(prototype.modal);
+            bindingModal();
         } 
     }
+
+    const bindingModal = function(){
+        //SAVE SOME DOM
+        const confBtn = document.querySelector("#conf-add-pr");
+        //VALIDATION
+        document.querySelector("#project-name").addEventListener("keyup",
+        validation);
+
+        ////BINDINGS THE BUTTONS ONCE THE MODAL IS APPENDED ON DOCUMENT
+        confBtn.disabled = true;
+        confBtn.addEventListener("click",
+        function(){
+            const projectName = document.querySelector("#project-name").value;
+            addProj(projectName);
+        });
+        document.querySelector("#cancel-add-pr").addEventListener("click",
+        prototype.removeModal);
+        ////
+    }
+
     const validation = function(){
         let valid = false;
         const confBtn = document.querySelector("#conf-add-pr");
@@ -118,17 +154,58 @@ const AddProjModal = function(){
         }
     }
 
-    const removeModal = function(){
-        divModal.remove();
-        activeModal=false;
-    }
-
     const addProj = function(projName){
-        myProjs.addProject(projName);
+        myProjs.addProj(projName);
         myProjs.showProjs();
     }
     
     return {showModal};
+}
+
+const AddTodoModal = function(){
+    const prototype = Modal();
+    prototype.modal.classList.add("add-todo-modal");
+    //TODO: In the AddTodoModal create the dropdown menu 
+    //listing all the projects to create a todo for
+    //could use forEach to create each project
+    prototype.modal.innerHTML = 
+    `
+    <div class="inner-modal">
+        <div class="modal-title">
+            <h2>New TODO for: </h2>
+        </div>
+        <div class="modal-info">
+            <div>
+                <h3>Name</h3>
+                <input type="text" id="project-name" size="30" required>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button id="cancel-add-todo" class="cancel-btn btn">Cancel</button>
+            <button id="conf-add-todo" class="conf-btn btn" >Add</button>
+        </div>
+    </div>
+    `
+
+    const showModal = function(){
+        if(!prototype.activeModal){
+            //MODAL IS ACTIVE
+            prototype.activeModal=true;
+            //WE ADD THE MODAL TO THE PAGE
+            document.querySelector("#content").appendChild(prototype.modal);
+            bindingModal();
+        } 
+    }
+
+    const bindingModal = function(){
+        document.querySelector("#cancel-add-todo").addEventListener("click",
+        prototype.removeModal);
+        ////
+    }
+
+
+    return {showModal};
+
 }
 
 const showProjects = function(projectList){
@@ -145,10 +222,13 @@ const showProjects = function(projectList){
         itemProj.innerHTML = `
         <span>${item.name}</span><span title="${item.todos.length} todos">${item.todos.length}</span>
         `;
-        itemProj.addEventListener("click",()=>console.log(index));
+        //itemProj.addEventListener("click",()=>console.log(index));
         projectsItems.appendChild(itemProj);
     });
     document.querySelector("#project-list").appendChild(projectsItems);
 }
+
+
+
 
 export {initialPage,showProjects};

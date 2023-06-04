@@ -162,6 +162,11 @@ input{
     color: darkblue;
     background: skyblue;
 }
+
+.add-todo-modal{
+    display: flex;
+    justify-content: space-evenly;
+}
 i{
     transition: all 0.4s ease;
 }
