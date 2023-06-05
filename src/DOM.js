@@ -2,7 +2,13 @@ import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
 import { MyProjects } from "./logic";
 
-
+/*
+TODOS: 
+--Ampliar la longitud maxima para los titulos de proyecto y TODO
+--Modificar codigo de AddProjectModal para guardar el DOM como 
+en AddTodoModal
+--Mostrar los todos en su respectivo proyecto
+*/
 function initialPage(){
     
     const content = document.querySelector("#content");
@@ -99,7 +105,13 @@ const AddProjModal = function(){
             <div class="modal-info">
                 <div class="modal-row">
                     <h3>Name</h3>
-                    <input type="text" id="project-name" size="30" required>
+                    <input type="text" id="project-name" size="30">
+                </div>
+            </div>
+            <div class="modal-input-errors">
+                <div>
+                    <label for="pr-name-length">Name between 0 and 20 characters</label>
+                    <input type="checkbox" id="pr-name-length" disabled>
                 </div>
             </div>
             <div class="modal-buttons">
@@ -145,12 +157,18 @@ const AddProjModal = function(){
     const validation = function(){
         let valid = false;
         const confBtn = document.querySelector("#conf-add-pr");
+        const goodLenCheck = document.querySelector("#pr-name-length");
+
         const projNameInpt = document.querySelector("#project-name");
-        if(projNameInpt.value.length>0){
+        if(projNameInpt.value.length>0 && projNameInpt.value.length<20){
             valid = true;
+            goodLenCheck.checked = true;
         }else{
             valid=false;
+            goodLenCheck.checked = false;
         }
+
+        
         if(valid){
             confBtn.disabled = false;
         }else{
@@ -169,10 +187,18 @@ const AddProjModal = function(){
 
 const AddTodoModal = function(){
     const prototype = Modal();
-    //TODO: In the AddTodoModal create the dropdown menu 
-    //listing all the projects to create a todo for
-    //could use forEach to create each project
     
+    let projSelect;
+    let titleInput;
+    let descriptionText;
+    let dueDateInput;
+    let prioritySelect;
+
+    let goodLenCheck;
+    let goodDateCheck;
+
+    let confBtn;
+
     const buildModal = function(){
         prototype.modal.innerHTML = 
         `
@@ -188,7 +214,44 @@ const AddTodoModal = function(){
                     return htmlString;
                 })()+
             `</div>
-            <div class="modal-info"> 
+            <div class="modal-info">
+                <div class="modal-row">
+                    <h2>TODO title</h2>
+                    <input id="todo-title" type="text">
+                </div>
+                <div class="modal-row">
+                    <h2>Description</h2>
+                    <textarea id="todo-description"></textarea>
+                </div>
+                <div class="modal-row">
+                    <h2>Due date</h2>
+                    <input id="todo-duedate" type="date">
+                </div>
+                <div class="modal-row">
+                    <h2>Priority</h2>
+                    <select id="todo-priority">
+                        <option value="High">
+                            High
+                        </option>
+                        <option value="Medium">
+                            Medium
+                        </option>
+                        <option value="Low">
+                            Low
+                        </option>
+                        <option value="Very low">
+                            Very low
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-input-errors">
+                <div>
+                    <label for="todo-title-length">Name between 0 and 20 characters</label>
+                    <input type="checkbox" id="todo-title-length" disabled>
+                    <label for="todo-date">Pick a date</label>
+                    <input type="checkbox" id="todo-date" disabled>
+                </div>
             </div>
             <div class="modal-buttons">
                 <button id="cancel-add-todo" class="cancel-btn btn">Cancel</button>
@@ -211,19 +274,65 @@ const AddTodoModal = function(){
 
     const bindingModal = function(){
         //SAVE SOME DOM
-        const confBtn = document.querySelector("#conf-add-todo");
+        
+        projSelect = document.querySelector("#projects-for-todo");
+        titleInput = document.querySelector("#todo-title");
+        descriptionText = document.querySelector("#todo-description");
+        dueDateInput = document.querySelector("#todo-duedate");
+        prioritySelect = document.querySelector("#todo-priority");
+        goodLenCheck = document.querySelector("#todo-title-length");
+        goodDateCheck = document.querySelector("#todo-date");
+        confBtn = document.querySelector("#conf-add-todo");
+
+        //VALIDATION
+        titleInput.addEventListener("keyup",
+        validation);
+        dueDateInput.addEventListener("change",
+        validation
+        );
         ////BINDINGS THE BUTTONS ONCE THE MODAL IS APPENDED ON DOCUMENT
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            console.log("hola");
+            addToDo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+
         });
         document.querySelector("#cancel-add-todo").addEventListener("click",
         prototype.removeModal);
         ////
     }
 
-    const addToDo = function(title,description,dueDate,priority,checked){
+    const validation = function(){
+        let valid = false;
+        const confBtn = document.querySelector("#conf-add-todo");
+        
+        if(titleInput.value.length>0 && titleInput.value.length<20){
+            valid = true;
+            goodLenCheck.checked = true;
+        }else{
+            valid=false;
+            goodLenCheck.checked = false;
+        }
+
+        if(dueDateInput.value!==""){
+            valid=true;
+            goodDateCheck.checked=true;
+        }else{
+            valid=false;
+            goodDateCheck.checked=false;
+        }
+
+        if(valid){
+            confBtn.disabled = false;
+        }else{
+            confBtn.disabled = true;
+        }
+
+    }
+
+    const addToDo = function(projBelong,title,description,dueDate,priority){
+        MyProjects.projects[projBelong].addToDo(title,description,dueDate,priority);
+        console.log(MyProjects.projects[projBelong]);
 
     }
 

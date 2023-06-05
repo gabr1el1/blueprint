@@ -117,10 +117,18 @@ li i{
     
 }
 
-.inner-modal > .modal-info{
+.modal-info{
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 10px;
+}
+
+.modal-info > div{
+    flex: 1;
+}
+
+.modal-info > div > input, textarea{
+    width: 100%;
 }
 input{
     border: none;
@@ -133,13 +141,12 @@ input{
     justify-content: center;  
     gap: 10px;
 }
-.inner-modal > .modal-title{
+.inner-modal > .modal-title, .modal-info, .modal-input-errors{
     border-bottom: thin solid lightgrey;
 }
 .inner-modal > .modal-info{
     flex: 1;
     overflow: auto;
-    border-bottom: thin solid lightgrey;
 }
 .inner-modal > .modal-info > div > *{
     margin-bottom: 5px;
