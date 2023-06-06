@@ -19,12 +19,10 @@ const MyProjects = (function(){
     const addProj = function(prName){
         projects.push(Project(prName));
     }
-    const showProjs= function(){
-        showProjects(projects);
-    }
+
     addProj("DEFAULT");
     
-    return {addProj,showProjs,get projects(){return projects}};
+    return {addProj,get projects(){return projects}};
 })();
 
 export {MyProjects};

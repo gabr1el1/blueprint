@@ -1,13 +1,11 @@
 import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
 import { MyProjects } from "./logic";
-
+let activeTab = 0;
 /*
 TODOS: 
---Ampliar la longitud maxima para los titulos de proyecto y TODO
---Modificar codigo de AddProjectModal para guardar el DOM como 
-en AddTodoModal
---Mostrar los todos en su respectivo proyecto
+--Hacer que los project Tabs reflejen la cantidad real de todos
+--Agregar Local Storage
 */
 function initialPage(){
     
@@ -59,6 +57,7 @@ function initialPage(){
     })
 
     showProjects(MyProjects.projects);
+    showToDos(0);
 }
 
 const Modal = function(){
@@ -95,6 +94,8 @@ const AddProjModal = function(){
     
     const prototype = Modal();
 
+    let confBtn,projName,cancelBtn, goodLenCheck;
+
     const buildModal = function(){
         prototype.modal.innerHTML = 
         `
@@ -110,7 +111,7 @@ const AddProjModal = function(){
             </div>
             <div class="modal-input-errors">
                 <div>
-                    <label for="pr-name-length">Name between 0 and 20 characters</label>
+                    <label for="pr-name-length">Name between 0 and 50 characters</label>
                     <input type="checkbox" id="pr-name-length" disabled>
                 </div>
             </div>
@@ -121,8 +122,7 @@ const AddProjModal = function(){
         </div>
         `;
     }
-    
-    
+
     const showModal = function(){
         if(!prototype.activeModal){
             //WE BUILD THE MODAL
@@ -137,30 +137,29 @@ const AddProjModal = function(){
 
     const bindingModal = function(){
         //SAVE SOME DOM
-        const confBtn = document.querySelector("#conf-add-pr");
+        confBtn = document.querySelector("#conf-add-pr");
+        projName = document.querySelector("#project-name");
+        cancelBtn = document.querySelector("#cancel-add-pr");
+        goodLenCheck = document.querySelector("#pr-name-length");
         //VALIDATION
-        document.querySelector("#project-name").addEventListener("keyup",
+        projName.addEventListener("keyup",
         validation);
 
         ////BINDINGS THE BUTTONS ONCE THE MODAL IS APPENDED ON DOCUMENT
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            const projectName = document.querySelector("#project-name").value;
-            addProj(projectName);
+            addProj(projName.value);
         });
-        document.querySelector("#cancel-add-pr").addEventListener("click",
+        cancelBtn.addEventListener("click",
         prototype.removeModal);
         ////
     }
 
     const validation = function(){
         let valid = false;
-        const confBtn = document.querySelector("#conf-add-pr");
-        const goodLenCheck = document.querySelector("#pr-name-length");
 
-        const projNameInpt = document.querySelector("#project-name");
-        if(projNameInpt.value.length>0 && projNameInpt.value.length<20){
+        if(projName.value.length>0 && projName.value.length<50){
             valid = true;
             goodLenCheck.checked = true;
         }else{
@@ -230,24 +229,24 @@ const AddTodoModal = function(){
                 <div class="modal-row">
                     <h2>Priority</h2>
                     <select id="todo-priority">
-                        <option value="High">
-                            High
-                        </option>
-                        <option value="Medium">
-                            Medium
+                        <option value="Very low">
+                            Very low
                         </option>
                         <option value="Low">
                             Low
                         </option>
-                        <option value="Very low">
-                            Very low
+                        <option value="Medium">
+                            Medium
+                        </option>
+                        <option value="High">
+                            High
                         </option>
                     </select>
                 </div>
             </div>
             <div class="modal-input-errors">
                 <div>
-                    <label for="todo-title-length">Name between 0 and 20 characters</label>
+                    <label for="todo-title-length">Title between 0 and 50 characters</label>
                     <input type="checkbox" id="todo-title-length" disabled>
                     <label for="todo-date">Pick a date</label>
                     <input type="checkbox" id="todo-date" disabled>
@@ -306,7 +305,7 @@ const AddTodoModal = function(){
         let valid = false;
         const confBtn = document.querySelector("#conf-add-todo");
         
-        if(titleInput.value.length>0 && titleInput.value.length<20){
+        if(titleInput.value.length>0 && titleInput.value.length<50){
             valid = true;
             goodLenCheck.checked = true;
         }else{
@@ -332,7 +331,9 @@ const AddTodoModal = function(){
 
     const addToDo = function(projBelong,title,description,dueDate,priority){
         MyProjects.projects[projBelong].addToDo(title,description,dueDate,priority);
-        console.log(MyProjects.projects[projBelong]);
+        if(activeTab==projBelong){
+            showToDos(projBelong);
+        }
 
     }
 
@@ -355,10 +356,31 @@ const showProjects = function(projectList){
         itemProj.innerHTML = `
         <span>${item.name}</span><span title="${item.todos.length} todos">${item.todos.length}</span>
         `;
-        //itemProj.addEventListener("click",()=>console.log(index));
+        itemProj.addEventListener("click",function(){
+            showToDos(index);
+            activeTab = index;
+        })
         projectsItems.appendChild(itemProj);
     });
     document.querySelector("#project-list").appendChild(projectsItems);
+}
+
+const showToDos= function(projectId){
+    const projInfo = document.querySelector("#project-info");
+    projInfo.innerHTML="";
+    
+    MyProjects.projects[projectId].todos.forEach(function(todo,index){
+        let itemTodo = document.createElement("div");
+        itemTodo.innerHTML = `
+            <div class="todo-item-title">
+                <h3>${todo.title}</h3>
+            </div>
+            <div>
+                <p>${todo.description}</p>
+            </div>
+        `;
+        projInfo.appendChild(itemTodo);
+    });
 }
 
 
