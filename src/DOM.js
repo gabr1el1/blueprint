@@ -5,6 +5,7 @@ let activeTab = 0;
 /*
 TODOS: 
 --Hacer que los project Tabs reflejen la cantidad real de todos
+--Poder editar un todo para moverlo de proyecto
 --Agregar Local Storage
 */
 function initialPage(){
@@ -178,6 +179,7 @@ const AddProjModal = function(){
     const addProj = function(projName){
         MyProjects.addProj(projName);
         showProjects(MyProjects.projects);
+        prototype.removeModal();
     }
     
 
@@ -229,16 +231,16 @@ const AddTodoModal = function(){
                 <div class="modal-row">
                     <h2>Priority</h2>
                     <select id="todo-priority">
-                        <option value="Very low">
+                        <option value="very-low">
                             Very low
                         </option>
-                        <option value="Low">
+                        <option value="low">
                             Low
                         </option>
-                        <option value="Medium">
+                        <option value="medium">
                             Medium
                         </option>
-                        <option value="High">
+                        <option value="high">
                             High
                         </option>
                     </select>
@@ -334,7 +336,7 @@ const AddTodoModal = function(){
         if(activeTab==projBelong){
             showToDos(projBelong);
         }
-
+        prototype.removeModal();
     }
 
 
@@ -365,18 +367,20 @@ const showProjects = function(projectList){
     document.querySelector("#project-list").appendChild(projectsItems);
 }
 
+const ModalTodo = function(){
+
+}
+
 const showToDos= function(projectId){
     const projInfo = document.querySelector("#project-info");
     projInfo.innerHTML="";
     
     MyProjects.projects[projectId].todos.forEach(function(todo,index){
         let itemTodo = document.createElement("div");
+        itemTodo.classList.add("todo",todo.priority);
         itemTodo.innerHTML = `
-            <div class="todo-item-title">
-                <h3>${todo.title}</h3>
-            </div>
             <div>
-                <p>${todo.description}</p>
+                <h3 class="todo-title">${todo.title}</h3><h3>Due: ${todo.dueDate}</h3>
             </div>
         `;
         projInfo.appendChild(itemTodo);

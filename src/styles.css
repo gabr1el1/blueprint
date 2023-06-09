@@ -89,10 +89,78 @@ li i{
 
 #project-info{
     flex: 3;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.todo{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 15px;
+    border-radius: 10px;
+    transition: all 0.5s ease;
 }
 
-#todos{
-    flex: 1;
+.todo.very-low{
+    background: royalblue;
+    color: white;
+}
+
+.todo.very-low:hover{
+    box-shadow: -5px 5px 3px royalblue;
+}
+
+.todo.low{
+    background: palegreen;
+    color: white;
+}
+
+.todo.low:hover{
+    box-shadow: -5px 5px palegreen;
+}
+
+.todo.medium{
+    background: coral;
+    color: white;
+}
+
+.todo.medium:hover{
+    box-shadow: -5px 5px coral;
+}
+
+.todo.high{
+    background: crimson;
+    color: white;
+}
+
+.todo.high:hover{
+    box-shadow: -5px 5px crimson;
+}
+
+
+.options-todo{
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+.option-button{
+    padding: 5px;
+    border: none;
+    text-align: center;
+    width: 50px;
+    border-radius: 5px;
+}
+
+.edit-button{
+    background-color: skyblue;
+    color: navy;
+}
+
+.delete-button{
+    background-color: red;
+    color: darkred;
 }
 .modal{
     position: absolute;
