@@ -58,7 +58,7 @@ function initialPage(){
     })
 
     showProjects(MyProjects.projects);
-    showToDos(0);
+    showToDos(MyProjects.projects[0].todos);
 }
 
 const Modal = function(){
@@ -334,7 +334,7 @@ const AddTodoModal = function(){
     const addToDo = function(projBelong,title,description,dueDate,priority){
         MyProjects.projects[projBelong].addToDo(title,description,dueDate,priority);
         if(activeTab==projBelong){
-            showToDos(projBelong);
+            showToDos(MyProjects.projects[projBelong].todos);
         }
         prototype.removeModal();
     }
@@ -367,20 +367,23 @@ const showProjects = function(projectList){
     document.querySelector("#project-list").appendChild(projectsItems);
 }
 
-const ModalTodo = function(){
 
-}
 
-const showToDos= function(projectId){
+const showToDos= function(todoList){
     const projInfo = document.querySelector("#project-info");
     projInfo.innerHTML="";
     
-    MyProjects.projects[projectId].todos.forEach(function(todo,index){
+    todoList.forEach(function(todo,index){
         let itemTodo = document.createElement("div");
         itemTodo.classList.add("todo",todo.priority);
+        itemTodo.setAttribute("title","click to see/edit")
         itemTodo.innerHTML = `
             <div>
-                <h3 class="todo-title">${todo.title}</h3><h3>Due: ${todo.dueDate}</h3>
+                <h3 class="todo-title">${todo.title}</h3>
+                <h3>Due: ${todo.dueDate}</h3>
+                <p id="see-edit-todo">
+                    <i class="fa-solid fa-eye" style="color: white;"></i>
+                </p>
             </div>
         `;
         projInfo.appendChild(itemTodo);
