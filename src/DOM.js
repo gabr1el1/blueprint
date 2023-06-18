@@ -5,7 +5,7 @@ let activeTab = 0;
 /*
 TODOS: 
 --Hacer que los project Tabs reflejen la cantidad real de todos
---Poder editar un todo para moverlo de proyecto
+--Poder editar un todo
 --Agregar Local Storage
 */
 function initialPage(){
@@ -40,8 +40,9 @@ function initialPage(){
 
     //BINDINGS
     const btnAddProject = document.querySelector("#add-project");
-    const addProjModal = AddProjModal();
+    
     btnAddProject.addEventListener("click",function(){
+        const addProjModal = AddProjModal();
         addProjModal.showModal();
     });
 
@@ -52,8 +53,8 @@ function initialPage(){
     });
 
     const btnAddTodo = document.querySelector("#add-todo");
-    const addTodoModal = AddTodoModal();
     btnAddTodo.addEventListener("click",function(){
+        const addTodoModal = AddTodoModal();
         addTodoModal.showModal();
     })
 
@@ -77,12 +78,14 @@ const Modal = function(){
     Here this Modal factory is returning an object,
     when accesing the activeModal property you are
     accesing the object property ITSELF BUT NOT THE 
-    VARIABLE activeModal in the scope of Modal
+    VARIABLE activeModal in the scope of Modal wich is using 
+    removeModal method
 
     ONE WAY TO ACCESS this variable is using getters
     and setters functions
 
-    Some info and examples : https://stackoverflow.com/questions/65590114/factory-function-method-not-updating-variable 
+    Some info and examples : 
+    https://stackoverflow.com/questions/65590114/factory-function-method-not-updating-variable 
     */
 
     return {modal,
@@ -332,7 +335,7 @@ const AddTodoModal = function(){
     }
 
     const addToDo = function(projBelong,title,description,dueDate,priority){
-        MyProjects.projects[projBelong].addToDo(title,description,dueDate,priority);
+        MyProjects.projects[projBelong].addToDo(projBelong,title,description,dueDate,priority);
         if(activeTab==projBelong){
             showToDos(MyProjects.projects[projBelong].todos);
         }
@@ -342,6 +345,168 @@ const AddTodoModal = function(){
 
     return {showModal};
 
+}
+
+const EditTodoModal = function(){
+    const prototype = Modal();
+    
+    let projSelect;
+    let titleInput;
+    let descriptionText;
+    let dueDateInput;
+    let prioritySelect;
+
+    let goodLenCheck;
+    let goodDateCheck;
+
+    let confBtn;
+
+    let todoNum,projectNum;
+
+    const buildModal = function(){
+        prototype.modal.innerHTML = 
+        `
+        <div class="inner-modal">
+            <div class="modal-title">
+                <h2>Edit TODO: </h2>`+
+                (function(){
+                    let htmlString = `<select id="projects-for-todo">`;
+                    MyProjects.projects.forEach(function(project,index){
+                        htmlString+=`<option value="${index}">${project.name}</option>`
+                    });
+                    htmlString+=`</select>`;
+                    return htmlString;
+                })()+
+            `</div>
+            <div class="modal-info">
+                <div class="modal-row">
+                    <h2>TODO title</h2>
+                    <input id="todo-title" type="text">
+                </div>
+                <div class="modal-row">
+                    <h2>Description</h2>
+                    <textarea id="todo-description"></textarea>
+                </div>
+                <div class="modal-row">
+                    <h2>Due date</h2>
+                    <input id="todo-duedate" type="date">
+                </div>
+                <div class="modal-row">
+                    <h2>Priority</h2>
+                    <select id="todo-priority">
+                        <option value="very-low">
+                            Very low
+                        </option>
+                        <option value="low">
+                            Low
+                        </option>
+                        <option value="medium">
+                            Medium
+                        </option>
+                        <option value="high">
+                            High
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-input-errors">
+                <div>
+                    <label for="todo-title-length">Title between 0 and 50 characters</label>
+                    <input type="checkbox" id="todo-title-length" disabled>
+                    <label for="todo-date">Pick a date</label>
+                    <input type="checkbox" id="todo-date" disabled>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="cancel-add-todo" class="cancel-btn btn">Cancel</button>
+                <button id="conf-add-todo" class="conf-btn btn" >Add</button>
+            </div>
+        <div/>`;
+    }  
+
+    const showModal = function(todoIndex,projectIndex){
+        if(!prototype.activeModal){
+            
+            
+            const todoToEdit = MyProjects.projects[projectIndex].todos[todoIndex];
+            //WE BUILD THE MODAL
+            buildModal();
+            //MODAL IS ACTIVE
+            prototype.activeModal=true;
+            //WE ADD THE MODAL TO THE PAGE
+            document.querySelector("#content").appendChild(prototype.modal);
+
+            bindingModal();
+
+            projSelect.value = todoToEdit.projectBelong;
+            titleInput.value = todoToEdit.title;
+            descriptionText.value = todoToEdit.description;
+            dueDateInput.value = todoToEdit.dueDate;
+            prioritySelect.value = todoToEdit.priority;
+        } 
+    }
+
+    const bindingModal = function(){
+        //SAVE SOME DOM
+        
+        projSelect = document.querySelector("#projects-for-todo");
+        titleInput = document.querySelector("#todo-title");
+        descriptionText = document.querySelector("#todo-description");
+        dueDateInput = document.querySelector("#todo-duedate");
+        prioritySelect = document.querySelector("#todo-priority");
+        goodLenCheck = document.querySelector("#todo-title-length");
+        goodDateCheck = document.querySelector("#todo-date");
+        confBtn = document.querySelector("#conf-add-todo");
+        
+        //validate modal first because information is not meant to be empty
+        validation();
+        //VALIDATION
+        titleInput.addEventListener("keyup",
+        validation);
+        dueDateInput.addEventListener("change",
+        validation
+        );
+        ////BINDINGS THE BUTTONS ONCE THE MODAL IS APPENDED ON DOCUMENT
+        confBtn.disabled = true;
+        confBtn.addEventListener("click",
+        function(){
+            addToDo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+
+        });
+        document.querySelector("#cancel-add-todo").addEventListener("click",
+        prototype.removeModal);
+        ////
+    }
+
+    const validation = function(){
+        let valid = false;
+        const confBtn = document.querySelector("#conf-add-todo");
+        
+        if(titleInput.value.length>0 && titleInput.value.length<50){
+            valid = true;
+            goodLenCheck.checked = true;
+        }else{
+            valid=false;
+            goodLenCheck.checked = false;
+        }
+
+        if(dueDateInput.value!==""){
+            valid=true;
+            goodDateCheck.checked=true;
+        }else{
+            valid=false;
+            goodDateCheck.checked=false;
+        }
+
+        if(valid){
+            confBtn.disabled = false;
+        }else{
+            confBtn.disabled = true;
+        }
+
+    }
+
+    return {showModal};
 }
 
 const showProjects = function(projectList){
@@ -359,15 +524,13 @@ const showProjects = function(projectList){
         <span>${item.name}</span><span title="${item.todos.length} todos">${item.todos.length}</span>
         `;
         itemProj.addEventListener("click",function(){
-            showToDos(index);
+            showToDos(MyProjects.projects[index].todos);
             activeTab = index;
         })
         projectsItems.appendChild(itemProj);
     });
     document.querySelector("#project-list").appendChild(projectsItems);
 }
-
-
 
 const showToDos= function(todoList){
     const projInfo = document.querySelector("#project-info");
@@ -376,21 +539,25 @@ const showToDos= function(todoList){
     todoList.forEach(function(todo,index){
         let itemTodo = document.createElement("div");
         itemTodo.classList.add("todo",todo.priority);
-        itemTodo.setAttribute("title","click to see/edit")
         itemTodo.innerHTML = `
             <div>
                 <h3 class="todo-title">${todo.title}</h3>
                 <h3>Due: ${todo.dueDate}</h3>
-                <p id="see-edit-todo">
-                    <i class="fa-solid fa-eye" style="color: white;"></i>
+                <p>
+                    <i class="fa-solid fa-circle-info see-edit-todo" title="See / edit" data-id=${index} data-project=${todo.projectBelong}></i>
                 </p>
             </div>
         `;
         projInfo.appendChild(itemTodo);
     });
+    Array.from(document.querySelectorAll(".see-edit-todo")).forEach(button=>{
+        button.addEventListener("click",
+        function(){
+            const editTodoModal = EditTodoModal();
+            editTodoModal.showModal(parseInt(this.dataset.id),parseInt(this.dataset.project));
+            //editTodoModal.showModal(this.dataset.id,this.dataset.project);
+        });
+    });
 }
-
-
-
 
 export {initialPage,showProjects};

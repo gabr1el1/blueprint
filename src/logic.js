@@ -1,14 +1,14 @@
 import { showProjects } from "./DOM";
 
-const todoItem = function(title,description,dueDate,priority,checked = false){
+const todoItem = function(projectBelong,title,description,dueDate,priority,checked = false){
 
-    return {title,description,dueDate,priority,checked};
+    return {projectBelong,title,description,dueDate,priority,checked};
 }
 const Project = function(name){
     let todos = [];
 
-    const addToDo = function(title,description,dueDate,priority){
-        todos.push(todoItem(title,description,dueDate,priority));
+    const addToDo = function(projectBelong,title,description,dueDate,priority){
+        todos.push(todoItem(projectBelong,title,description,dueDate,priority));
     }
     return {name,addToDo, get todos(){return todos}};
 }
