@@ -10,7 +10,10 @@ const Project = function(name){
     const addToDo = function(projectBelong,title,description,dueDate,priority){
         todos.push(todoItem(projectBelong,title,description,dueDate,priority));
     }
-    return {name,addToDo, get todos(){return todos}};
+    const addToDoItem = function(todoItem){
+        todos.push(todoItem);
+    }
+    return {name,addToDo,addToDoItem, get todos(){return todos}};
 }
 
 const MyProjects = (function(){

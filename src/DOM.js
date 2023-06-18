@@ -17,7 +17,7 @@ function initialPage(){
     const header = document.createElement("header");
     header.insertAdjacentHTML("afterbegin",
     `
-    <ul><li><img src="${logoSrc}" id="logo"></li><li><input type="text" placeholder="Search"></li></ul>
+    <ul><li><img src="${logoSrc}" id="logo"></li><li></li></ul>
     <ul><li><i class="fa-solid fa-plus" id="add-todo" title="Add todo"></i></li></ul>
     `
     );
@@ -361,6 +361,8 @@ const EditTodoModal = function(){
 
     let confBtn;
 
+    let todoInd, projInd;
+
     const buildModal = function(){
         prototype.modal.innerHTML = 
         `
@@ -424,8 +426,9 @@ const EditTodoModal = function(){
 
     const showModal = function(todoIndex,projectIndex){
         if(!prototype.activeModal){
-            
-            
+            todoInd = todoIndex;
+            projInd = projectIndex;
+
             const todoToEdit = MyProjects.projects[projectIndex].todos[todoIndex];
             //WE BUILD THE MODAL
             buildModal();
@@ -470,7 +473,7 @@ const EditTodoModal = function(){
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            addToDo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+            editToDo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
 
         });
         document.querySelector("#cancel-add-todo").addEventListener("click",
@@ -499,6 +502,24 @@ const EditTodoModal = function(){
             confBtn.disabled = true;
         }
 
+    }
+
+    const editToDo = function(projBelong,title,description,dueDate,priority){
+        //We edit the todo in the project it belongs
+        MyProjects.projects[projInd].todos[todoInd].projBelong = projBelong;
+        MyProjects.projects[projInd].todos[todoInd].title = title;
+        MyProjects.projects[projInd].todos[todoInd].description = description;
+        MyProjects.projects[projInd].todos[todoInd].dueDate = dueDate;
+        MyProjects.projects[projInd].todos[todoInd].priority = priority;
+        let newVerTodo = MyProjects.projects[projInd].todos[todoInd];
+        //We remove the todo from the project it was on
+        MyProjects.projects[projInd].todos.splice(todoInd,1);
+        MyProjects.projects[projBelong].addToDoItem(newVerTodo);
+        
+        if(activeTab==projBelong){
+            showToDos(MyProjects.projects[projBelong].todos);
+        }
+        prototype.removeModal();
     }
 
     return {showModal};
