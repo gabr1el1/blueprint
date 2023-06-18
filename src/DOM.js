@@ -5,7 +5,6 @@ let activeTab = 0;
 /*
 TODOS: 
 --Hacer que los project Tabs reflejen la cantidad real de todos
---Poder editar un todo
 --Agregar Local Storage
 */
 function initialPage(){
@@ -340,6 +339,7 @@ const AddTodoModal = function(){
             showToDos(MyProjects.projects[projBelong].todos);
         }
         prototype.removeModal();
+        showProjects(MyProjects.projects);
     }
 
 
@@ -506,7 +506,7 @@ const EditTodoModal = function(){
 
     const editToDo = function(projBelong,title,description,dueDate,priority){
         //We edit the todo in the project it belongs
-        MyProjects.projects[projInd].todos[todoInd].projBelong = projBelong;
+        MyProjects.projects[projInd].todos[todoInd].projectBelong = projBelong;
         MyProjects.projects[projInd].todos[todoInd].title = title;
         MyProjects.projects[projInd].todos[todoInd].description = description;
         MyProjects.projects[projInd].todos[todoInd].dueDate = dueDate;
@@ -516,10 +516,11 @@ const EditTodoModal = function(){
         MyProjects.projects[projInd].todos.splice(todoInd,1);
         MyProjects.projects[projBelong].addToDoItem(newVerTodo);
         
-        if(activeTab==projBelong){
-            showToDos(MyProjects.projects[projBelong].todos);
+        if(activeTab==projInd){
+            showToDos(MyProjects.projects[projInd].todos);
         }
         prototype.removeModal();
+        showProjects(MyProjects.projects);
     }
 
     return {showModal};
@@ -549,6 +550,7 @@ const showProjects = function(projectList){
 }
 
 const showToDos= function(todoList){
+    console.log(todoList);
     const projInfo = document.querySelector("#project-info");
     projInfo.innerHTML="";
     
