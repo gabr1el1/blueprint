@@ -361,8 +361,6 @@ const EditTodoModal = function(){
 
     let confBtn;
 
-    let todoNum,projectNum;
-
     const buildModal = function(){
         prototype.modal.innerHTML = 
         `
@@ -419,7 +417,7 @@ const EditTodoModal = function(){
             </div>
             <div class="modal-buttons">
                 <button id="cancel-add-todo" class="cancel-btn btn">Cancel</button>
-                <button id="conf-add-todo" class="conf-btn btn" >Add</button>
+                <button id="conf-edit-todo" class="conf-btn btn" >Edit</button>
             </div>
         <div/>`;
     }  
@@ -443,6 +441,9 @@ const EditTodoModal = function(){
             descriptionText.value = todoToEdit.description;
             dueDateInput.value = todoToEdit.dueDate;
             prioritySelect.value = todoToEdit.priority;
+
+            //validate modal first because information is not meant to be empty
+            validation();
         } 
     }
 
@@ -456,10 +457,9 @@ const EditTodoModal = function(){
         prioritySelect = document.querySelector("#todo-priority");
         goodLenCheck = document.querySelector("#todo-title-length");
         goodDateCheck = document.querySelector("#todo-date");
-        confBtn = document.querySelector("#conf-add-todo");
+        confBtn = document.querySelector("#conf-edit-todo");
         
-        //validate modal first because information is not meant to be empty
-        validation();
+        
         //VALIDATION
         titleInput.addEventListener("keyup",
         validation);
@@ -475,25 +475,20 @@ const EditTodoModal = function(){
         });
         document.querySelector("#cancel-add-todo").addEventListener("click",
         prototype.removeModal);
-        ////
+        
     }
 
     const validation = function(){
-        let valid = false;
-        const confBtn = document.querySelector("#conf-add-todo");
-        
-        if(titleInput.value.length>0 && titleInput.value.length<50){
-            valid = true;
-            goodLenCheck.checked = true;
-        }else{
+        let valid = true;
+        goodLenCheck.checked = true;
+        goodDateCheck.checked=true;
+
+        if(titleInput.value.length==0 || titleInput.value.length>=50){
             valid=false;
             goodLenCheck.checked = false;
         }
 
-        if(dueDateInput.value!==""){
-            valid=true;
-            goodDateCheck.checked=true;
-        }else{
+        if(dueDateInput.value==""){
             valid=false;
             goodDateCheck.checked=false;
         }
