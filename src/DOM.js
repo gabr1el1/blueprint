@@ -4,7 +4,7 @@ import { MyProjects } from "./logic";
 let activeTab = 0;
 /*
 TODOS: 
---Hacer que los project Tabs reflejen la cantidad real de todos
+--Agregar botón de remover
 --Agregar Local Storage
 */
 function initialPage(){
@@ -563,7 +563,18 @@ const showToDos= function(todoList){
                 <h3>Due: ${todo.dueDate}</h3>
                 <p>
                     <i class="fa-solid fa-circle-info see-edit-todo" title="See / edit" data-id=${index} data-project=${todo.projectBelong}></i>
+                    <label for="${index}">Done?</label>`+
+                    (function(){
+                        if(todo.checked){
+                            return `<input class="check-done-todo" type="checkbox" data-id=${index} data-project=${todo.projectBelong} checked>`;
+                        }else{
+                            return `<input class="check-done-todo" type="checkbox" data-id=${index} data-project=${todo.projectBelong}>`;
+                        }
+                    })()+
+                    `
+                    <i class="fa-solid fa-trash delete-todo" title="Delete Todo" data-id=${index} data-project=${todo.projectBelong}></i>
                 </p>
+                
             </div>
         `;
         projInfo.appendChild(itemTodo);
@@ -576,6 +587,20 @@ const showToDos= function(todoList){
             //editTodoModal.showModal(this.dataset.id,this.dataset.project);
         });
     });
+
+    Array.from(document.querySelectorAll(".check-done-todo")).forEach(check=>{
+        check.addEventListener("change",
+        function(){
+            MyProjects.projects[this.dataset.project].todos[this.dataset.id].checked = this.checked;
+        });
+    });
+
+    Array.from(document.querySelectorAll(".delete-todo")).forEach(button=>{
+        button.addEventListener("click",function(){
+            MyProjects.projects[this.dataset.project].todos.splice(1,this.dataset.id);
+            showToDos(MyProjects.projects[this.dataset.project].todos);
+        })
+    })
 }
 
 export {initialPage,showProjects};
