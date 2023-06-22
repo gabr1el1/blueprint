@@ -4,8 +4,16 @@ import { MyProjects } from "./logic";
 let activeTab = 0;
 /*
 TODOS: 
---Agregar botón de remover
 --Agregar Local Storage
+*/
+
+/*
+local storage: 
+localStorage.setItem("MyProjects",MyProjects.projects)
+
+Ahora ya sabes que localStorage te permite guardar como json
+clave y valor pero solo como string, JSON.stringify es IMPORTANTE para guardar
+y JSON.parse es IMPORTANTE para extraer, recuperar valores
 */
 function initialPage(){
     
@@ -55,8 +63,8 @@ function initialPage(){
     btnAddTodo.addEventListener("click",function(){
         const addTodoModal = AddTodoModal();
         addTodoModal.showModal();
-    })
-
+    });
+    console.log(JSON.parse(localStorage.getItem("MyProjects")));
     showProjects(MyProjects.projects);
     showToDos(MyProjects.projects[0].todos);
 }
@@ -179,7 +187,10 @@ const AddProjModal = function(){
     }
 
     const addProj = function(projName){
+        
         MyProjects.addProj(projName);
+        localStorage.setItem("MyProjects",JSON.stringify(MyProjects.projects));
+        console.log(localStorage.getItem("MyProjects"));
         showProjects(MyProjects.projects);
         prototype.removeModal();
     }
@@ -597,8 +608,10 @@ const showToDos= function(todoList){
 
     Array.from(document.querySelectorAll(".delete-todo")).forEach(button=>{
         button.addEventListener("click",function(){
-            MyProjects.projects[this.dataset.project].todos.splice(1,this.dataset.id);
+            console.log(typeof this.dataset.id);
+            MyProjects.projects[this.dataset.project].todos.splice(this.dataset.id,1);
             showToDos(MyProjects.projects[this.dataset.project].todos);
+            showProjects(MyProjects.projects);
         })
     })
 }
