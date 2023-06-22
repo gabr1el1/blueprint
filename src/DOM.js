@@ -161,6 +161,7 @@ const AddProjModal = function(){
         confBtn.addEventListener("click",
         function(){
             addProj(projName.value);
+            prototype.removeModal();
         });
         cancelBtn.addEventListener("click",
         prototype.removeModal);
@@ -185,17 +186,6 @@ const AddProjModal = function(){
             confBtn.disabled = true;
         }
     }
-
-    const addProj = function(projName){
-        
-        MyProjects.addProj(projName);
-        localStorage.setItem("MyProjects",JSON.stringify(MyProjects.projects));
-        console.log(localStorage.getItem("MyProjects"));
-        showProjects(MyProjects.projects);
-        prototype.removeModal();
-    }
-    
-
     return {showModal};
 }
 
@@ -261,7 +251,7 @@ const AddTodoModal = function(){
             </div>
             <div class="modal-input-errors">
                 <div>
-                    <label for="todo-title-length">Title between 0 and 50 characters</label>
+                    <label for="todo-title-length">Title between 1 and 50 characters</label>
                     <input type="checkbox" id="todo-title-length" disabled>
                     <label for="todo-date">Pick a date</label>
                     <input type="checkbox" id="todo-date" disabled>
@@ -309,33 +299,29 @@ const AddTodoModal = function(){
         confBtn.addEventListener("click",
         function(){
             addToDo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
-
+            prototype.removeModal();
+            showProjects(MyProjects.projects);
         });
         document.querySelector("#cancel-add-todo").addEventListener("click",
         prototype.removeModal);
-        ////
     }
 
     const validation = function(){
-        let valid = false;
+        let valid = true;
+        goodLenCheck.checked = true;
+        goodDateCheck.checked=true;
         const confBtn = document.querySelector("#conf-add-todo");
         
-        if(titleInput.value.length>0 && titleInput.value.length<50){
-            valid = true;
+        if(titleInput.value.length==0 || titleInput.value.length>50){
+            valid = false;
             goodLenCheck.checked = true;
-        }else{
-            valid=false;
-            goodLenCheck.checked = false;
         }
 
-        if(dueDateInput.value!==""){
-            valid=true;
-            goodDateCheck.checked=true;
-        }else{
+        if(dueDateInput.value==""){
             valid=false;
             goodDateCheck.checked=false;
         }
-
+        
         if(valid){
             confBtn.disabled = false;
         }else{
@@ -343,16 +329,6 @@ const AddTodoModal = function(){
         }
 
     }
-
-    const addToDo = function(projBelong,title,description,dueDate,priority){
-        MyProjects.projects[projBelong].addToDo(projBelong,title,description,dueDate,priority);
-        if(activeTab==projBelong){
-            showToDos(MyProjects.projects[projBelong].todos);
-        }
-        prototype.removeModal();
-        showProjects(MyProjects.projects);
-    }
-
 
     return {showModal};
 
@@ -537,6 +513,19 @@ const EditTodoModal = function(){
     return {showModal};
 }
 
+const addProj = function(projName){
+    MyProjects.addProj(projName);
+    showProjects(MyProjects.projects);
+}
+
+const addToDo = function(projBelong,title,description,dueDate,priority){
+    MyProjects.projects[projBelong].addToDo(projBelong,title,description,dueDate,priority);
+    if(activeTab==projBelong){
+        showToDos(MyProjects.projects[projBelong].todos);
+    }
+    
+}
+
 const showProjects = function(projectList){
     let projectsItems;
     if(document.querySelector("#projects-items")===null){
@@ -561,7 +550,6 @@ const showProjects = function(projectList){
 }
 
 const showToDos= function(todoList){
-    console.log(todoList);
     const projInfo = document.querySelector("#project-info");
     projInfo.innerHTML="";
     
