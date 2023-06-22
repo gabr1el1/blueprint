@@ -7,13 +7,10 @@ const todoItem = function(projectBelong,title,description,dueDate,priority,check
 const Project = function(name){
     let todos = [];
 
-    const addToDo = function(projectBelong,title,description,dueDate,priority){
-        todos.push(todoItem(projectBelong,title,description,dueDate,priority));
-    }
-    const addToDoItem = function(todoItem){
+    const addToDo= function(todoItem){
         todos.push(todoItem);
     }
-    return {name,addToDo,addToDoItem, get todos(){return todos}};
+    return {name,addToDo, get todos(){return todos}};
 }
 
 const MyProjects = (function(){
@@ -28,4 +25,4 @@ const MyProjects = (function(){
     return {addProj,get projects(){return projects}};
 })();
 
-export {MyProjects};
+export {MyProjects, todoItem};

@@ -1,6 +1,6 @@
 import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
-import { MyProjects } from "./logic";
+import { MyProjects,todoItem } from "./models.js";
 let activeTab = 0;
 /*
 TODOS: 
@@ -122,7 +122,7 @@ const AddProjModal = function(){
             </div>
             <div class="modal-input-errors">
                 <div>
-                    <label for="pr-name-length">Name between 0 and 50 characters</label>
+                    <label for="pr-name-length">Name between 1 and 50 characters</label>
                     <input type="checkbox" id="pr-name-length" disabled>
                 </div>
             </div>
@@ -298,9 +298,9 @@ const AddTodoModal = function(){
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            addToDo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+            let todo = todoItem(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+            addToDo(todo);
             prototype.removeModal();
-            showProjects(MyProjects.projects);
         });
         document.querySelector("#cancel-add-todo").addEventListener("click",
         prototype.removeModal);
@@ -321,7 +321,7 @@ const AddTodoModal = function(){
             valid=false;
             goodDateCheck.checked=false;
         }
-        
+
         if(valid){
             confBtn.disabled = false;
         }else{
@@ -501,7 +501,7 @@ const EditTodoModal = function(){
         let newVerTodo = MyProjects.projects[projInd].todos[todoInd];
         //We remove the todo from the project it was on
         MyProjects.projects[projInd].todos.splice(todoInd,1);
-        MyProjects.projects[projBelong].addToDoItem(newVerTodo);
+        MyProjects.projects[projBelong].addToDo(newVerTodo);
         
         if(activeTab==projInd){
             showToDos(MyProjects.projects[projInd].todos);
@@ -518,12 +518,12 @@ const addProj = function(projName){
     showProjects(MyProjects.projects);
 }
 
-const addToDo = function(projBelong,title,description,dueDate,priority){
-    MyProjects.projects[projBelong].addToDo(projBelong,title,description,dueDate,priority);
-    if(activeTab==projBelong){
-        showToDos(MyProjects.projects[projBelong].todos);
+const addToDo = function(todoItem){
+    MyProjects.projects[todoItem.projectBelong].addToDo(todoItem);
+    if(activeTab==todoItem.projectBelong){
+        showToDos(MyProjects.projects[todoItem.projectBelong].todos);
     }
-    
+    showProjects(MyProjects.projects);
 }
 
 const showProjects = function(projectList){
