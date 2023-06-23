@@ -1,20 +1,12 @@
 import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
-import { MyProjects,todoItem } from "./models.js";
+import { MyProjects,todoItem,editTodo, checkTodoDone} from "./logic.js";
 let activeTab = 0;
 /*
 TODOS: 
 --Agregar Local Storage
 */
 
-/*
-local storage: 
-localStorage.setItem("MyProjects",MyProjects.projects)
-
-Ahora ya sabes que localStorage te permite guardar como json
-clave y valor pero solo como string, JSON.stringify es IMPORTANTE para guardar
-y JSON.parse es IMPORTANTE para extraer, recuperar valores
-*/
 function initialPage(){
     
     const content = document.querySelector("#content");
@@ -160,7 +152,8 @@ const AddProjModal = function(){
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            addProj(projName.value);
+            MyProjects.addProj(projName.value);
+            showProjects(MyProjects.projects);
             prototype.removeModal();
         });
         cancelBtn.addEventListener("click",
@@ -298,10 +291,14 @@ const AddTodoModal = function(){
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            let todo = todoItem(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
-            addToDo(todo);
+            MyProjects.projects[parseInt(projSelect.value)].addTodo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+            if(activeTab==parseInt(projSelect.value)){
+                showToDos(MyProjects.projects[parseInt(projSelect.value)].todos);
+            }
+            showProjects(MyProjects.projects);
             prototype.removeModal();
         });
+
         document.querySelector("#cancel-add-todo").addEventListener("click",
         prototype.removeModal);
     }
@@ -348,7 +345,7 @@ const EditTodoModal = function(){
 
     let confBtn;
 
-    let todoInd, projInd;
+    let oldInd, oldProj;
 
     const buildModal = function(){
         prototype.modal.innerHTML = 
@@ -411,12 +408,12 @@ const EditTodoModal = function(){
         <div/>`;
     }  
 
-    const showModal = function(todoIndex,projectIndex){
+    const showModal = function(oldIndex,projectIndex){
         if(!prototype.activeModal){
-            todoInd = todoIndex;
-            projInd = projectIndex;
+            oldInd = oldIndex;
+            oldProj = projectIndex;
 
-            const todoToEdit = MyProjects.projects[projectIndex].todos[todoIndex];
+            const todoToEdit = MyProjects.projects[projectIndex].todos[oldIndex];
             //WE BUILD THE MODAL
             buildModal();
             //MODAL IS ACTIVE
@@ -460,8 +457,12 @@ const EditTodoModal = function(){
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            editToDo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
-
+            editTodo(oldProj,oldInd,parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+            if(activeTab==oldProj){
+                showToDos(MyProjects.projects[oldProj].todos);
+            }
+            prototype.removeModal();
+            showProjects(MyProjects.projects);
         });
         document.querySelector("#cancel-add-todo").addEventListener("click",
         prototype.removeModal);
@@ -491,39 +492,7 @@ const EditTodoModal = function(){
 
     }
 
-    const editToDo = function(projBelong,title,description,dueDate,priority){
-        //We edit the todo in the project it belongs
-        MyProjects.projects[projInd].todos[todoInd].projectBelong = projBelong;
-        MyProjects.projects[projInd].todos[todoInd].title = title;
-        MyProjects.projects[projInd].todos[todoInd].description = description;
-        MyProjects.projects[projInd].todos[todoInd].dueDate = dueDate;
-        MyProjects.projects[projInd].todos[todoInd].priority = priority;
-        let newVerTodo = MyProjects.projects[projInd].todos[todoInd];
-        //We remove the todo from the project it was on
-        MyProjects.projects[projInd].todos.splice(todoInd,1);
-        MyProjects.projects[projBelong].addToDo(newVerTodo);
-        
-        if(activeTab==projInd){
-            showToDos(MyProjects.projects[projInd].todos);
-        }
-        prototype.removeModal();
-        showProjects(MyProjects.projects);
-    }
-
     return {showModal};
-}
-
-const addProj = function(projName){
-    MyProjects.addProj(projName);
-    showProjects(MyProjects.projects);
-}
-
-const addToDo = function(todoItem){
-    MyProjects.projects[todoItem.projectBelong].addToDo(todoItem);
-    if(activeTab==todoItem.projectBelong){
-        showToDos(MyProjects.projects[todoItem.projectBelong].todos);
-    }
-    showProjects(MyProjects.projects);
 }
 
 const showProjects = function(projectList){
@@ -590,13 +559,12 @@ const showToDos= function(todoList){
     Array.from(document.querySelectorAll(".check-done-todo")).forEach(check=>{
         check.addEventListener("change",
         function(){
-            MyProjects.projects[this.dataset.project].todos[this.dataset.id].checked = this.checked;
+            checkTodoDone(this.dataset.project,this.dataset.id,this.checked);
         });
     });
 
     Array.from(document.querySelectorAll(".delete-todo")).forEach(button=>{
         button.addEventListener("click",function(){
-            console.log(typeof this.dataset.id);
             MyProjects.projects[this.dataset.project].todos.splice(this.dataset.id,1);
             showToDos(MyProjects.projects[this.dataset.project].todos);
             showProjects(MyProjects.projects);
@@ -604,4 +572,5 @@ const showToDos= function(todoList){
     })
 }
 
-export {initialPage,showProjects};
+
+export {initialPage,showProjects,showToDos};
