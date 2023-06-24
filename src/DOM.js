@@ -1,6 +1,6 @@
 import "./styles.css";
 import logoSrc from "./assets/logoShortWhite.png";
-import { MyProjects,todoItem,editTodo, checkTodoDone} from "./logic.js";
+import { MyProjects,editTodo, checkTodoDone, deleteTodo, storageAvailable} from "./logic.js";
 let activeTab = 0;
 /*
 TODOS: 
@@ -56,9 +56,7 @@ function initialPage(){
         const addTodoModal = AddTodoModal();
         addTodoModal.showModal();
     });
-    console.log(JSON.parse(localStorage.getItem("MyProjects")));
-    showProjects(MyProjects.projects);
-    showToDos(MyProjects.projects[0].todos);
+    
 }
 
 const Modal = function(){
@@ -153,7 +151,12 @@ const AddProjModal = function(){
         confBtn.addEventListener("click",
         function(){
             MyProjects.addProj(projName.value);
-            showProjects(MyProjects.projects);
+            if(storageAvailable("localStorage")){
+                showProjects(JSON.parse(localStorage.getItem("MyProjects")));
+            }else{
+                showProjects(MyProjects.projects);
+            }
+            
             prototype.removeModal();
         });
         cancelBtn.addEventListener("click",
@@ -293,9 +296,19 @@ const AddTodoModal = function(){
         function(){
             MyProjects.projects[parseInt(projSelect.value)].addTodo(parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
             if(activeTab==parseInt(projSelect.value)){
-                showToDos(MyProjects.projects[parseInt(projSelect.value)].todos);
+                if(storageAvailable("localStorage")){
+
+                    showToDos(
+                        JSON.parse(localStorage.getItem("MyProjects"))[parseInt(projSelect.value)].todos
+                    );
+                    showProjects(JSON.parse(localStorage.getItem("MyProjects"))  );
+
+                }else{
+                    showToDos(MyProjects.projects[parseInt(projSelect.value)].todos);
+                    showProjects(MyProjects.projects);
+                }
             }
-            showProjects(MyProjects.projects);
+            
             prototype.removeModal();
         });
 
@@ -333,7 +346,8 @@ const AddTodoModal = function(){
 
 const EditTodoModal = function(){
     const prototype = Modal();
-    
+    let checkDone;
+
     let projSelect;
     let titleInput;
     let descriptionText;
@@ -429,6 +443,7 @@ const EditTodoModal = function(){
             dueDateInput.value = todoToEdit.dueDate;
             prioritySelect.value = todoToEdit.priority;
 
+
             //validate modal first because information is not meant to be empty
             validation();
         } 
@@ -445,7 +460,10 @@ const EditTodoModal = function(){
         goodLenCheck = document.querySelector("#todo-title-length");
         goodDateCheck = document.querySelector("#todo-date");
         confBtn = document.querySelector("#conf-edit-todo");
-        
+        checkDone = 
+        document.querySelector(".check-done-todo[data-id="+
+        CSS.escape(oldInd)+"]"+"[data-project="+
+        CSS.escape(oldProj)+"]");
         
         //VALIDATION
         titleInput.addEventListener("keyup",
@@ -457,7 +475,7 @@ const EditTodoModal = function(){
         confBtn.disabled = true;
         confBtn.addEventListener("click",
         function(){
-            editTodo(oldProj,oldInd,parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value);
+            editTodo(oldProj,oldInd,parseInt(projSelect.value),titleInput.value,descriptionText.value,dueDateInput.value,prioritySelect.value,checkDone.checked);
             if(activeTab==oldProj){
                 showToDos(MyProjects.projects[oldProj].todos);
             }
@@ -565,7 +583,8 @@ const showToDos= function(todoList){
 
     Array.from(document.querySelectorAll(".delete-todo")).forEach(button=>{
         button.addEventListener("click",function(){
-            MyProjects.projects[this.dataset.project].todos.splice(this.dataset.id,1);
+            deleteTodo(this.dataset.project,this.dataset.id);
+
             showToDos(MyProjects.projects[this.dataset.project].todos);
             showProjects(MyProjects.projects);
         })
@@ -574,3 +593,7 @@ const showToDos= function(todoList){
 
 
 export {initialPage,showProjects,showToDos};
+
+/*
+
+*/
