@@ -1,4 +1,7 @@
-import "./styles.css";
+import "./css/styles.css";
+import "./css/all.min.css";
+import { format } from "date-fns";
+
 import logoSrc from "./assets/logoShortWhite.png";
 import { MyProjects,editTodo, checkTodoDone, deleteTodo, storageAvailable} from "./logic.js";
 let activeTab = 0;
@@ -546,7 +549,7 @@ const showToDos= function(todoList){
         itemTodo.innerHTML = `
             <div>
                 <h3 class="todo-title">${todo.title}</h3>
-                <h3>Due: ${todo.dueDate}</h3>
+                <h3>Due: ${format(new Date(todo.dueDate),"PP")}</h3>
                 <p>
                     <i class="fa-solid fa-circle-info see-edit-todo" title="See / edit" data-id=${index} data-project=${todo.projectBelong}></i>
                     <label for="${index}">Done?</label>`+
